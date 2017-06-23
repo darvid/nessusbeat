@@ -3,6 +3,14 @@
 	"ignore": "",
 	"package": [
 		{
+			"checksumSHA1": "bV8aZfr0uFILpZexqBEvdsRcp3I=",
+			"path": "github.com/OnBeep/backoff",
+			"revision": "9fdd4ceb0628925ede3574dbf01cc4b607e5b668",
+			"revisionTime": "2017-06-02T04:08:01Z",
+			"version": "=max-tries",
+			"versionExact": "max-tries"
+		},
+		{
 			"checksumSHA1": "8vKpc6+OyoYZS8YeRZuNp+7n5lA=",
 			"path": "github.com/attwad/nessie",
 			"revision": "dc0f47847ebbbf878f6689ab38fcec8c710b5ca9",

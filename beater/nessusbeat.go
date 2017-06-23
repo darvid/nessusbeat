@@ -14,24 +14,12 @@ import (
 	"github.com/elastic/beats/libbeat/logp"
 	"github.com/elastic/beats/libbeat/publisher"
 
+	"github.com/OnBeep/backoff"
 	"github.com/attwad/nessie"
 	"github.com/fsnotify/fsnotify"
 
 	"github.com/darvid/nessusbeat/config"
 )
-
-func GetScanIDByUUID(nessus nessie.Nessus, uuid string) (int64, error) {
-	result, err := nessus.Scans()
-	if err != nil {
-		return -1, err
-	}
-	for _, scan := range result.Scans {
-		if scan.UUID == uuid {
-			return scan.ID, nil
-		}
-	}
-	return -1, nil
-}
 
 type Nessusbeat struct {
 	done   chan struct{}
@@ -52,6 +40,56 @@ func New(b *beat.Beat, cfg *common.Config) (beat.Beater, error) {
 	return bt, nil
 }
 
+func (bt *Nessusbeat) ScanIDByUUID(nessus nessie.Nessus, uuid string) (int64, error) {
+	result, err := nessus.Scans()
+	if err != nil {
+		return -1, err
+	}
+	for _, scan := range result.Scans {
+		if scan.UUID == uuid {
+			return scan.ID, nil
+		}
+	}
+	return -1, nil
+}
+
+func (bt *Nessusbeat) NewConnection() (*nessie.Nessus, error) {
+	var (
+		nessus nessie.Nessus
+		err    error
+	)
+	if bt.config.CaCertPath != "" {
+		nessus, err = nessie.NewNessus(bt.config.NessusApiUrl, bt.config.CaCertPath)
+	} else {
+		nessus, err = nessie.NewInsecureNessus(bt.config.NessusApiUrl)
+	}
+	return &nessus, err
+}
+
+func (bt *Nessusbeat) Login(nessus nessie.Nessus) error {
+	return nessus.Login(bt.config.NessusApiUsername, bt.config.NessusApiPassword)
+}
+
+func (bt *Nessusbeat) ExportScanCSV(nessus nessie.Nessus, uuid string) ([]byte, error) {
+	scanID, err := bt.ScanIDByUUID(nessus, uuid)
+	if err != nil {
+		return []byte{}, err
+	}
+	exportID, err := nessus.ExportScan(scanID, nessie.ExportCSV)
+	if err != nil {
+		return []byte{}, err
+	}
+	for {
+		if finished, err := nessus.ExportFinished(scanID, exportID); err != nil {
+			return []byte{}, err
+		} else if finished {
+			break
+		}
+		time.Sleep(5 * time.Second)
+	}
+	return nessus.DownloadExport(scanID, exportID)
+}
+
 func (bt *Nessusbeat) Run(b *beat.Beat) error {
 	logp.Info("nessusbeat is running! Hit CTRL-C to stop it.")
 
@@ -68,20 +106,14 @@ func (bt *Nessusbeat) Run(b *beat.Beat) error {
 	bt.client = b.Publisher.Connect()
 	results := make(chan []byte)
 
-	var nessus nessie.Nessus
-	if bt.config.CaCertPath != "" {
-		nessus, err = nessie.NewNessus(bt.config.NessusApiUrl, bt.config.CaCertPath)
-	} else {
-		nessus, err = nessie.NewInsecureNessus(bt.config.NessusApiUrl)
-	}
+	nessus, err := bt.NewConnection()
 	if err != nil {
 		logp.WTF(err.Error())
 	}
-
-	if err := nessus.Login(bt.config.NessusApiUsername, bt.config.NessusApiPassword); err != nil {
+	if err = bt.Login(*nessus); err != nil {
 		logp.WTF(err.Error())
 	}
-	defer nessus.Logout()
+	defer (*nessus).Logout()
 
 	go func() {
 		for {
@@ -90,27 +122,23 @@ func (bt *Nessusbeat) Run(b *beat.Beat) error {
 				ext := filepath.Ext(event.Name)
 				if event.Op&fsnotify.Write == fsnotify.Write && ext == ".nessus" {
 					basename := filepath.Base(event.Name)
-					logp.Info("Exporting scan %s", basename)
 					uuid := strings.TrimSuffix(basename, filepath.Ext(basename))
-					scanID, err := GetScanIDByUUID(nessus, uuid)
+					logp.Info("Exporting scan %s", uuid)
+					var csv []byte
+					err = backoff.RetryNotify(
+						func() error {
+							csv, err = bt.ExportScanCSV(*nessus, uuid)
+							return err
+						},
+						backoff.WithMaxTries(backoff.NewExponentialBackOff(), 5),
+						func(err error, duration time.Duration) {
+							logp.Warn(err.Error())
+							logp.Warn("Retrying in %d", duration)
+						},
+					)
 					if err != nil {
-						logp.WTF(err.Error())
-					}
-					exportID, err := nessus.ExportScan(scanID, nessie.ExportCSV)
-					if err != nil {
-						logp.WTF(err.Error())
-					}
-					for {
-						if finished, err := nessus.ExportFinished(scanID, exportID); err != nil {
-							logp.WTF(err.Error())
-						} else if finished {
-							break
-						}
-						time.Sleep(5 * time.Second)
-					}
-					csv, err := nessus.DownloadExport(scanID, exportID)
-					if err != nil {
-						logp.WTF(err.Error())
+						logp.Err(err.Error())
+						continue
 					}
 					results <- csv
 				}

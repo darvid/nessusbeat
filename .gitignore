@@ -1,0 +1,8 @@
+/logs
+/.idea
+/build
+
+.DS_Store
+/nessusbeat
+/nessusbeat.test
+*.pyc

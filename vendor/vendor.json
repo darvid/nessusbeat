@@ -1,0 +1,25 @@
+{
+	"comment": "",
+	"ignore": "",
+	"package": [
+		{
+			"checksumSHA1": "8vKpc6+OyoYZS8YeRZuNp+7n5lA=",
+			"path": "github.com/attwad/nessie",
+			"revision": "dc0f47847ebbbf878f6689ab38fcec8c710b5ca9",
+			"revisionTime": "2017-04-03T13:27:57Z"
+		},
+		{
+			"checksumSHA1": "LE7q4aPITU5N090e8Y8RdW0MNJ0=",
+			"path": "github.com/fsnotify/fsnotify",
+			"revision": "4da3e2cfbabc9f751898f250b49f2439785783a1",
+			"revisionTime": "2017-03-29T04:21:07Z"
+		},
+		{
+			"checksumSHA1": "Nvdcfh0dngvfAZ4fcuo/jIBfdNo=",
+			"path": "github.com/lair-framework/go-nessus",
+			"revision": "585a96dc18959b5f06044ea405e3774030a1e1d3",
+			"revisionTime": "2015-04-08T21:31:05Z"
+		}
+	],
+	"rootPath": "github.com/darvid/nessusbeat"
+}

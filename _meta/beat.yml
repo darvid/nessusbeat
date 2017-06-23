@@ -1,0 +1,12 @@
+################### Nessusbeat Configuration Example #########################
+
+############################# Nessusbeat ######################################
+
+nessusbeat:
+  report_path: /opt/nessus/var/nessus/users/admin/reports
+  # Path to root certificates.
+  #cacert_path:
+  # The Nessus API URL.
+  #api_url:
+  #api_username:
+  #api_password:

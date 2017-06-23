@@ -1,0 +1,11 @@
+- module: http
+  metricsets: ["json"]
+  enabled: false
+  period: 10s
+  hosts: ["localhost:80"]
+  namespace: "json_namespace"
+  path: "/"
+  #body: ""
+  #method: "GET"
+  #request.enabled: false
+  #response.enabled: false

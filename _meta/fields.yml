@@ -1,0 +1,30 @@
+- key: nessusbeat
+  title: nessusbeat
+  description:
+  fields:
+    - name: plugin_id
+      type: long
+    - name: cve
+      type: text
+    - name: cvss
+      type: text
+    - name: risk
+      type: text
+    - name: host
+      type: text
+    - name: protocol
+      type: text
+    - name: port
+      type: long
+    - name: name
+      type: text
+    - name: synopsis
+      type: text
+    - name: description
+      type: text
+    - name: solution
+      type: text
+    - name: see_also
+      type: text
+    - name: plugin_output
+      type: text

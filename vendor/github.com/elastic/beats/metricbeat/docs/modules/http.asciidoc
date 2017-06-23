@@ -1,0 +1,47 @@
+////
+This file is generated! See scripts/docs_collector.py
+////
+
+[[metricbeat-module-http]]
+== HTTP Module
+
+The HTTP module is a Metricbeat module used to call arbitrary HTTP endpoints for which a dedicated Metricbeat module is not available.
+
+Multiple endpoints can be configured which are polled in a regular interval and the result is shipped to the configured output channel. It is recommended to install a Metricbeat instance on each host from which data should be fetched.
+
+This module is inspired by the Logstash https://www.elastic.co/guide/en/logstash/current/plugins-inputs-http_poller.html[http_poller] input filter but doesn't require that the endpoint is reachable by Logstash as the Metricbeat module pushes the data to the configured output channels, e.g. Logstash or Elasticsearch.
+
+This is often necessary in security restricted network setups, where Logstash is not able to reach all servers. Instead the server to be monitored itself has Metricbeat installed and can send the data or a collector server has Metricbeat installed which is deployed in the secured network environment and can reach all servers to be monitored.
+
+
+[float]
+=== Example Configuration
+
+The HTTP module supports the standard configuration options that are described
+in <<configuration-metricbeat>>. Here is an example configuration:
+
+[source,yaml]
+----
+metricbeat.modules:
+- module: http
+  metricsets: ["json"]
+  enabled: false
+  period: 10s
+  hosts: ["localhost:80"]
+  namespace: "json_namespace"
+  path: "/"
+  #body: ""
+  #method: "GET"
+  #request.enabled: false
+  #response.enabled: false
+----
+
+[float]
+=== Metricsets
+
+The following metricsets are available:
+
+* <<metricbeat-metricset-http-json,json>>
+
+include::http/json.asciidoc[]
+

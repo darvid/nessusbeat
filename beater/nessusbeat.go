@@ -106,15 +106,6 @@ func (bt *Nessusbeat) Run(b *beat.Beat) error {
 	bt.client = b.Publisher.Connect()
 	results := make(chan []byte)
 
-	nessus, err := bt.NewConnection()
-	if err != nil {
-		logp.WTF(err.Error())
-	}
-	if err = bt.Login(*nessus); err != nil {
-		logp.WTF(err.Error())
-	}
-	defer (*nessus).Logout()
-
 	go func() {
 		for {
 			select {
@@ -127,6 +118,14 @@ func (bt *Nessusbeat) Run(b *beat.Beat) error {
 					var csv []byte
 					err = backoff.RetryNotify(
 						func() error {
+							nessus, err := bt.NewConnection()
+							if err != nil {
+								logp.WTF(err.Error())
+							}
+							if err = bt.Login(*nessus); err != nil {
+								logp.WTF(err.Error())
+							}
+							defer (*nessus).Logout()
 							csv, err = bt.ExportScanCSV(*nessus, uuid)
 							return err
 						},

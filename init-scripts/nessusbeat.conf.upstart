@@ -1,0 +1,11 @@
+description "nessusbeat"
+start on runlevel [2345]
+stop on runlevel [!2345]
+respawn
+env DAEMONUSER=root
+env DAEMON=/opt/nessusbeat/nessusbeat
+env DAEMON_ARGS="-c /opt/nessusbeat/nessusbeat.yml"
+script
+    /bin/su - -c "$DAEMON $DAEMON_ARGS" $DAEMONUSER
+end script
+post-stop exec sleep 5

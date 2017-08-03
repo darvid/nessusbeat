@@ -44,6 +44,9 @@ To run Nessusbeat with debugging output enabled, run:
 ./nessusbeat -c nessusbeat.yml -e -d "*"
 ```
 
+To run on startup, see the [init-scripts](https://github.com/darvid/nessusbeat/tree/master/init-scripts)
+folder for example configuration files for each init system.
+
 ### Roadmap
 
 - [ ] Add option to poll remote Nessus and SecurityCenter

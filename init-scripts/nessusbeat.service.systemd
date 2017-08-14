@@ -1,0 +1,15 @@
+[Unit]
+Description=nessusbeat
+After=network.target
+
+[Service]
+User=root
+WorkingDirectory=/opt/nessusbeat
+ExecStart=/opt/nessusbeat/nessusbeat -c nessusbeat.yml
+ExecReload=/bin/kill -s HUP $MAINPID
+ExecStop=/bin/kill -s TERM $MAINPID
+Restart=always
+ExecStopPost=/bin/sleep 5
+
+[Install]
+WantedBy=multi-user.target

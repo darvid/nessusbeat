@@ -8,6 +8,7 @@ nessusbeat:
   #api_url:
   #api_username:
   #api_password:
+  #timestamp_fields:
 
 name: nessusbeat
 

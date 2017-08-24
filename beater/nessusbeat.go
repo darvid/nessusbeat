@@ -186,6 +186,10 @@ func (bt *Nessusbeat) Run(b *beat.Beat) error {
 					"see_also":      record[11],
 					"plugin_output": record[12],
 				}
+				timestampFields := strings.Split(bt.config.TimestampFields, ",")
+				for _, field := range timestampFields {
+					event[strings.TrimSpace(field)] = event["@timestamp"]
+				}
 				bt.client.PublishEvent(event)
 			}
 		}

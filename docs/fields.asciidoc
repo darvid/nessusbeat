@@ -236,27 +236,27 @@ type: long
 [float]
 === cve
 
-type: text
+type: keyword
 
 [float]
 === cvss
 
-type: text
+type: keyword
 
 [float]
 === risk
 
-type: text
+type: keyword
 
 [float]
 === host
 
-type: text
+type: keyword
 
 [float]
 === protocol
 
-type: text
+type: keyword
 
 [float]
 === port
@@ -266,30 +266,30 @@ type: long
 [float]
 === name
 
-type: text
+type: keyword
 
 [float]
 === synopsis
 
-type: text
+type: keyword
 
 [float]
 === description
 
-type: text
+type: keyword
 
 [float]
 === solution
 
-type: text
+type: keyword
 
 [float]
 === see_also
 
-type: text
+type: keyword
 
 [float]
 === plugin_output
 
-type: text
+type: keyword
 

@@ -144,26 +144,26 @@
     - name: plugin_id
       type: long
     - name: cve
-      type: text
+      type: keyword
     - name: cvss
-      type: text
+      type: keyword
     - name: risk
-      type: text
+      type: keyword
     - name: host
-      type: text
+      type: keyword
     - name: protocol
-      type: text
+      type: keyword
     - name: port
       type: long
     - name: name
-      type: text
+      type: keyword
     - name: synopsis
-      type: text
+      type: keyword
     - name: description
-      type: text
+      type: keyword
     - name: solution
-      type: text
+      type: keyword
     - name: see_also
-      type: text
+      type: keyword
     - name: plugin_output
-      type: text
+      type: keyword
